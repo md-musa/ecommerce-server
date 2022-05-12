@@ -1,0 +1,11 @@
+-> Product
+1. add product
+
+2. fetch product
+   1.Query
+    ->category
+    -> price (min and max)
+
+3. fetch by category
+
+4. 

@@ -1,0 +1,27 @@
+
+=> Framework and library
+1. express
+2. mongoDB and mongoose
+3. bcrypt
+4. express-validator
+5. joi and joi password complexity
+6. jwt
+8. loadash
+9. slugify
+
+
+=> Dev dependencies
+1. nodemon
+2. jest
+3. supertest
+4. eslint
+  -> import plugin
+  -> airbnb-design pattern
+  -> prettier plugin
+5. Babel
+   -> babel node
+   ->
+
+
+=> API
+1. 
