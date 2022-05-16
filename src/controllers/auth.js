@@ -3,7 +3,6 @@ const { validateUser, validateSignInUser } = require('../validations/auth');
 const _ = require('lodash');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-// const config = require("config");
 
 const signup = async (req, res) => {
   const { error } = validateUser(req.body);

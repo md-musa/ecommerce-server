@@ -1,8 +1,12 @@
 const express = require('express');
+
 const app = express();
 const mongoose = require('mongoose');
 const cors = require('cors');
-//* Routes
+
+const port = process.env.PORT || 5000;
+
+// routes
 const user = require('./routes/auth');
 const cart = require('./routes/cart');
 const category = require('./routes/category');
@@ -15,11 +19,11 @@ mongoose
     useCreateIndex: true,
   })
   .then(() => console.log('-> Connected successfully with MongoDB...'))
-  .catch(err => console.log(`-> Could not connected Error: ${err} `));
+  .catch((err) => console.log(`-> Could not connected Error: ${err} `));
 
+// middlewares
 app.use(cors());
 app.use(express.json());
-
 app.use('/api/auth', user);
 app.use('/api/category', category);
 app.use('/api/product', product);
@@ -27,5 +31,4 @@ app.use('/api/cart', cart);
 
 app.get('/', (req, res) => res.status(200).send('This is homepage'));
 
-const port = process.env.PORT || 3000;
 app.listen(port, () => console.log(`-> Server running at port ${port} ...`));
