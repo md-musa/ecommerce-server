@@ -1,26 +1,28 @@
-const mongoose = require('mongoose');
-const Product = require('../models/product');
 const slugify = require('slugify');
+const Product = require('../models/product');
 const Categories = require('../models/category');
-const { ObjectId } = require('mongodb');
 
+/**
+ * @description Add new product
+ * @route       POST /api/product/addProduct
+ * @access      Admin
+ */
 const addProduct = async (req, res) => {
-  const { name, price, description, category, createdBy } = req.body;
+  const {
+    name,
+    price,
+    description,
+    images,
+    category,
+    createdBy,
+  } = req.body;
 
-  if (!req.files.length)
-    return res.send({ message: "product's image required" });
-
-  let productImages = req.files.map(file => {
-    return { img: file.filename };
-  });
-
-  console.log(productImages);
   const product = {
     name,
     slug: slugify(name),
     price,
     description,
-    productImages,
+    images,
     category,
     createdBy,
   };
@@ -34,11 +36,16 @@ const addProduct = async (req, res) => {
   }
 };
 
+
+/**
+ * @description Get product by category
+ * @route       GET /api/product/:productByCategory
+ * @access      Admin
+ */
 const getProductByCategory = async (req, res) => {
   const { category: categoryName } = req.params;
   try {
     const category = await Categories.findOne({ slug: categoryName });
-    console.log(category);
     const products = await Product.find({ category: category._id });
     res.send(products);
   } catch (err) {

@@ -4,8 +4,8 @@ const productSchema = mongoose.Schema(
   {
     name: {
       type: String,
-      required: true,
       trim: true,
+      required: true,
     },
     slug: {
       type: String,
@@ -23,13 +23,7 @@ const productSchema = mongoose.Schema(
     offer: {
       type: String,
     },
-    productImages: [
-      {
-        img: {
-          type: String,
-        },
-      },
-    ],
+    images: [{type:String}],
     category: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Category',
@@ -48,11 +42,7 @@ const productSchema = mongoose.Schema(
     },
     updatedAt: Date,
   },
-  { timestamp: true }
+  { timestamp: true },
 );
 
-const Product = mongoose.model('Product', productSchema);
-module.exports = Product;
-
-// * name, price, category, description, created by,
-// image, offer, created time,
+module.exports = mongoose.model('Product', productSchema);

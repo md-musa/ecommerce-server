@@ -40,13 +40,12 @@ const userSchema = new Schema(
     },
     profilePicture: { type: String },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 userSchema.methods.generateAuthToken = function () {
-  const token = jwt.sign({ _id: this._id }, 'jwtPrivateKey');
+  const token = jwt.sign({ _id: this._id }, process.env.JWT_SECRET);
   return token;
 };
 
-const User = model('User', userSchema);
-module.exports = User;
+module.exports = model('User', userSchema);

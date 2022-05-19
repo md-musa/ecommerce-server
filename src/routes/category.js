@@ -1,8 +1,9 @@
 const express = require('express');
-const { addCategory, getCategories } = require('../controllers/category');
-const router = express.Router();
 
-router.post('/create', addCategory);
-router.get('/getCategories', getCategories);
+const router = express.Router();
+const { addCategory, getCategories } = require('../controllers/category');
+
+router.post('/addCategory', addCategory);// adminMid, requireRegistration
+router.get('/categories', getCategories);
 
 module.exports = router;

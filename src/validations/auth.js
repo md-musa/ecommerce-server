@@ -19,7 +19,7 @@ function validateUser(userData) {
   return schema.validate(userData);
 }
 
-function validateSignInUser(userData) {
+function validateLoginUser(userData) {
   const schema = Joi.object({
     email: Joi.string().email().required(),
     password: new PasswordComplexity({
@@ -34,4 +34,4 @@ function validateSignInUser(userData) {
   });
   return schema.validate(userData);
 }
-module.exports = { validateUser, validateSignInUser };
+module.exports = { validateUser, validateLoginUser };
