@@ -7,6 +7,9 @@ const cors = require('cors');
 const fileUpload = require('express-fileupload');
 const connectDB = require('./config/db');
 
+const helmet = require('helmet');
+const compression = require('compression');
+
 // routes
 const auth = require('./routes/auth');
 const cart = require('./routes/cart');
@@ -16,6 +19,8 @@ const order = require('./routes/order');
 
 connectDB();
 
+app.use(helmet());
+app.use(compression());
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));

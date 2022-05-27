@@ -1,8 +1,13 @@
 const mongoose = require('mongoose');
 
 const connectDB = async () => {
+  const database =
+    process.env.NODE_ENVIRONMENT === 'production'
+      ? process.env.MONGODB_URI
+      : process.env.MONGODB_URI_LOCAL;
+  console.log(database);
   try {
-    await mongoose.connect(process.env.MONGO_URI, {
+    await mongoose.connect(database, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
       useCreateIndex: true,
