@@ -1,4 +1,4 @@
-function adminMiddleware(req, res, next) {
+function isAdmin(req, res, next) {
   next();
 }
 

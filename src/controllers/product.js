@@ -9,33 +9,39 @@ const Categories = require('../models/category');
  */
 const addProduct = async (req, res) => {
   const {
-    name,
+    title,
     price,
     description,
-    images,
+    stock,
+    brand,
+    image,
     category,
     createdBy,
   } = req.body;
+  console.log(req.body);
 
   const product = {
-    name,
-    slug: slugify(name),
+    title,
+    slug: slugify(title).toLowerCase(),
     price,
     description,
-    images,
+    stock,
+    brand,
     category,
     createdBy,
   };
+
   try {
     const newProduct = new Product(product);
+    newProduct.images.push(req.body.image);
+
     const result = await newProduct.save();
-    res.status(201).send(result);
+    return res.status(201).send(result);
   } catch (err) {
     console.log(err);
-    res.status(400).send(err);
+    return res.status(400).send(err);
   }
 };
-
 
 /**
  * @description Get product by category
@@ -47,11 +53,36 @@ const getProductByCategory = async (req, res) => {
   try {
     const category = await Categories.findOne({ slug: categoryName });
     const products = await Product.find({ category: category._id });
-    res.send(products);
+    return res.send(products);
   } catch (err) {
     console.log(err);
-    res.send(err);
+    return res.send(err);
   }
 };
 
-module.exports = { addProduct, getProductByCategory };
+const products = async (req, res) => {
+  try {
+    const products = await Product.find();
+    return res.send({ products });
+  } catch (err) {
+    console.log(err);
+    return res.send(err);
+  }
+};
+
+const getBestSellingProducts = async (req, res) => {
+  try {
+    const items = await Product.find().sort({ sold: -1 }).limit(5);
+    return res.send(items);
+  } catch (err) {
+    console.log(err);
+    return res.send(err);
+  }
+};
+
+module.exports = {
+  getBestSellingProducts,
+  addProduct,
+  getProductByCategory,
+  products,
+};

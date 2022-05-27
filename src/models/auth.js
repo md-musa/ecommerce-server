@@ -32,7 +32,7 @@ const userSchema = new Schema(
     },
     role: {
       type: String,
-      enum: ['user', 'admin'],
+      enum: ['user', 'admin', 'superAdmin'],
       default: 'user',
     },
     contractNumber: {
@@ -40,7 +40,7 @@ const userSchema = new Schema(
     },
     profilePicture: { type: String },
   },
-  { timestamps: true },
+  { timestamps: true }
 );
 
 userSchema.methods.generateAuthToken = function () {

@@ -12,6 +12,7 @@ const auth = require('./routes/auth');
 const cart = require('./routes/cart');
 const category = require('./routes/category');
 const product = require('./routes/product');
+const order = require('./routes/order');
 
 connectDB();
 
@@ -21,7 +22,8 @@ app.use(express.urlencoded({ extended: true }));
 app.use(fileUpload());
 app.use('/api/auth', auth);
 app.use('/api/category', category);
-app.use('/api/product', product);
-app.use('/api/cart', cart);
+app.use('/api/products', product);
+app.use('/api/carts', cart);
+app.use('/api/orders', order);
 
 app.listen(port, () => console.log(`-> Server running at port ${port} ...`));

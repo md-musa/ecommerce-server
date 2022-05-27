@@ -1,5 +1,5 @@
 const slugify = require('slugify');
-const Categories = require('../models/category');
+const Category = require('../models/category');
 
 /**
  * @description Create new category
@@ -7,38 +7,46 @@ const Categories = require('../models/category');
  * @access      Admin
  */
 const addCategory = async (req, res) => {
-  const { name, parentId } = req.body;
+  const { name, parentId, image } = req.body;
 
-  const category = {
+  const category = new Category({
     name,
     slug: slugify(name),
-  };
-  if (parentId) category.parentId = parentId;
+    image,
+    subCategories: [],
+  });
 
   try {
-    const newCategory = new Categories(category);
-    await newCategory.save();
-
-    res.status(201).send(newCategory);
+    if (parentId) {
+      const parentCategory = await Category.findById(parentId);
+      parentCategory.subCategories.push(category);
+      parentCategory.save();
+      res.status(200).send(parentCategory);
+    } else {
+      const newCategory = await category.save();
+      res.send(newCategory);
+    }
   } catch (err) {
-    console.error(err);
-    res.status(400).send(err);
+    console.log(err);
+    return res.status(400).send(err);
   }
 };
 
 function generateCategoryTree(categories, parentId = null) {
   const categoryList = [];
-  let category;
+  let _categories;
 
-  if (parentId == null) category = categories.filter((category) => category.parentId == undefined);
-  else category = categories.filter((category) => category.parentId == parentId);
+  if (parentId == null)
+    _categories = categories.filter(category => category.parentId == undefined);
+  else
+    _categories = categories.filter(category => category.parentId == parentId);
 
-  for (const category of category) {
+  for (let i = 0; i < _categories.length; i++) {
     categoryList.push({
-      _id: category._id,
-      name: category.name,
-      slug: category.slug,
-      children: generateCategoryTree(categories, category._id),
+      _id: _categories[i]._id,
+      name: _categories[i].name,
+      slug: _categories[i].slug,
+      children: generateCategoryTree(categories, _categories._id),
     });
   }
 
@@ -51,11 +59,15 @@ function generateCategoryTree(categories, parentId = null) {
  * @access      Public
  */
 const getCategories = async (req, res) => {
+  const { id } = req.body;
   try {
-    const categories = await Categories.find({});
-    const categoryTree = generateCategoryTree(categories);
-
-    return res.status(200).send(categoryTree);
+    if (id) {
+      const categories = await Category.findById(id);
+      return res.send(categories);
+    } else {
+      const subCategories = await Category.find();
+      return res.send(subCategories);
+    }
   } catch (err) {
     console.log(err);
     return res.status(400).send(err);
