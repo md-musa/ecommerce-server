@@ -16,7 +16,7 @@ const addCategory = async (req, res) => {
     subCategories: [],
   });
 
-  try {
+ 
     if (parentId) {
       const parentCategory = await Category.findById(parentId);
       parentCategory.subCategories.push(category);
@@ -26,10 +26,7 @@ const addCategory = async (req, res) => {
       const newCategory = await category.save();
       res.send(newCategory);
     }
-  } catch (err) {
-    console.log(err);
-    return res.status(400).send(err);
-  }
+ 
 };
 
 function generateCategoryTree(categories, parentId = null) {
@@ -60,7 +57,7 @@ function generateCategoryTree(categories, parentId = null) {
  */
 const getCategories = async (req, res) => {
   const { id } = req.body;
-  try {
+
     if (id) {
       const categories = await Category.findById(id);
       return res.send(categories);
@@ -68,10 +65,7 @@ const getCategories = async (req, res) => {
       const subCategories = await Category.find();
       return res.send(subCategories);
     }
-  } catch (err) {
-    console.log(err);
-    return res.status(400).send(err);
-  }
+ 
 };
 
 module.exports = { addCategory, getCategories };

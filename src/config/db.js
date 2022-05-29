@@ -4,8 +4,9 @@ const connectDB = async () => {
   const database =
     process.env.NODE_ENVIRONMENT === 'production'
       ? process.env.MONGODB_URI
-      : process.env.MONGODB_URI_LOCAL;
+      : process.env.MONGODB_LOCAL_URI;
   console.log(database);
+  
   try {
     await mongoose.connect(database, {
       useNewUrlParser: true,

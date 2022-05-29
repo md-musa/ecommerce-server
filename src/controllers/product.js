@@ -31,16 +31,13 @@ const addProduct = async (req, res) => {
     createdBy,
   };
 
-  try {
+
     const newProduct = new Product(product);
     newProduct.images.push(req.body.image);
 
     const result = await newProduct.save();
     return res.status(201).send(result);
-  } catch (err) {
-    console.log(err);
-    return res.status(400).send(err);
-  }
+  
 };
 
 /**
@@ -50,34 +47,22 @@ const addProduct = async (req, res) => {
  */
 const getProductByCategory = async (req, res) => {
   const { category: categoryName } = req.params;
-  try {
+
     const category = await Categories.findOne({ slug: categoryName });
     const products = await Product.find({ category: category._id });
-    return res.send(products);
-  } catch (err) {
-    console.log(err);
-    return res.send(err);
-  }
+  
 };
 
 const products = async (req, res) => {
-  try {
     const products = await Product.find();
-    return res.send({ products });
-  } catch (err) {
-    console.log(err);
-    return res.send(err);
-  }
+     res.send({ products });
 };
 
 const getBestSellingProducts = async (req, res) => {
-  try {
+
     const items = await Product.find().sort({ sold: -1 }).limit(5);
     return res.send(items);
-  } catch (err) {
-    console.log(err);
-    return res.send(err);
-  }
+ 
 };
 
 module.exports = {

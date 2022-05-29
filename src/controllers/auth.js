@@ -13,7 +13,7 @@ const registerUser = async (req, res) => {
 
   const { name, username, email, password } = req.body;
 
-  try {
+
     const isUserExist = await User.findOne({ email });
     if (isUserExist) return res.status(400).send('User already registered');
 
@@ -33,10 +33,7 @@ const registerUser = async (req, res) => {
       email: user.email,
       token: user.generateAuthToken(),
     });
-  } catch (err) {
-    console.log(`Error ==> ${err}`);
-    return res.status(400).send(err);
-  }
+  
 };
 
 /**
@@ -53,7 +50,7 @@ const loginUser = async (req, res) => {
   const user = await User.findOne({ email });
   if (!user) return res.status(401).send('Invalid email or password');
 
-  try {
+  
     const isValidPassword = await bcrypt.compare(password, user.password);
     if (!isValidPassword) return res.status(400).send('Invalid password');
 
@@ -64,26 +61,20 @@ const loginUser = async (req, res) => {
       role: user.role,
       token: user.generateAuthToken(),
     });
-  } catch (err) {
-    console.log(`Error ==> ${err}`);
-    return res.status(400).send(err);
-  }
+ 
 };
 
 const getUsers = async (req, res) => {
-  try {
+  
     const users = await User.find({});
     return res.status(200).json({ users });
-  } catch (err) {
-    console.log(`Error ==> ${err}`);
-    return res.status(400).send(err);
-  }
+  
 };
 
 const makeAdmin = async (req, res) => {
   const { userId } = req.body;
   console.log(userId);
-  try {
+
     const user = await User.findById(userId);
     user.role = 'admin';
     await user.save();
@@ -91,10 +82,7 @@ const makeAdmin = async (req, res) => {
       message: 'User made admin successfully',
       user,
     });
-  } catch (err) {
-    console.log(`Error ==> ${err}`);
-    return res.status(400).send(err);
-  }
+ 
 };
 
 module.exports = { makeAdmin, registerUser, loginUser, getUsers };
