@@ -3,15 +3,13 @@ require('dotenv').config();
 
 const express = require('express');
 
+const port = process.env.PORT || 5000;
 const app = express();
 const cors = require('cors');
 const helmet = require('helmet');
 const compression = require('compression');
 const fileUpload = require('express-fileupload');
-const winston = require('winston');
 const connectDB = require('./config/db');
-
-const port = process.env.PORT || 5000;
 
 // routes
 const auth = require('./routes/auth');
@@ -21,12 +19,11 @@ const product = require('./routes/product');
 const order = require('./routes/order');
 const error = require('./middlewares/error');
 
-process.on('uncaughtException', exception => {
-  console.log('WE GOT AND UNCAUGHT EXCEPTION');
-  console.log(exception);
-});
-
 connectDB();
+
+app.use(cors());
+app.use(helmet());
+app.use(compression());
 app.use(express.urlencoded({ extended: true }));
 app.use(fileUpload());
 app.use('/api/category', category);

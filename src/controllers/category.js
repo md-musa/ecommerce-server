@@ -8,25 +8,6 @@ const Category = require('../models/category');
  */
 const addCategory = async (req, res) => {
   const { name, parentId, image } = req.body;
-
-  const category = new Category({
-    name,
-    slug: slugify(name),
-    image,
-    subCategories: [],
-  });
-
- 
-    if (parentId) {
-      const parentCategory = await Category.findById(parentId);
-      parentCategory.subCategories.push(category);
-      parentCategory.save();
-      res.status(200).send(parentCategory);
-    } else {
-      const newCategory = await category.save();
-      res.send(newCategory);
-    }
- 
 };
 
 function generateCategoryTree(categories, parentId = null) {
@@ -58,14 +39,12 @@ function generateCategoryTree(categories, parentId = null) {
 const getCategories = async (req, res) => {
   const { id } = req.body;
 
-    if (id) {
-      const categories = await Category.findById(id);
-      return res.send(categories);
-    } else {
-      const subCategories = await Category.find();
-      return res.send(subCategories);
-    }
- 
+  if (id) {
+    const categories = await Category.findById(id);
+    return res.send(categories);
+  }
+  const subCategories = await Category.find();
+  return res.send(subCategories);
 };
 
 module.exports = { addCategory, getCategories };

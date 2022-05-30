@@ -23,7 +23,8 @@
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^5.13.3",
     "slugify": "^1.6.0",
-    "winston": "^3.7.2"
+    "winston": "^3.7.2",
+    "winston-mongodb": "^5.0.7"
   },
   "devDependencies": {
     "eslint": "^8.15.0",
