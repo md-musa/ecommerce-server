@@ -8,8 +8,7 @@
 6. jwt
 8. loadash
 9. slugify
-
-
+10. 
 => Dev dependencies
 1. nodemon
 2. jest
@@ -22,6 +21,16 @@
    -> babel node
    ->
 
-
-=> API
+----------------------API--------------------------
 1. 
+
+----------------------TODO--------------------------
+-> Fix add category api
+-> What should be the format of response?
+-> Use Trie data structure for auto suggestion
+-> auto correction 
+-> Use tree data structure for category
+-> Use Quick sort for sorting
+-> 
+
+

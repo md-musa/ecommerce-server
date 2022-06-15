@@ -7,8 +7,8 @@ const {
 const express = require('express');
 const router = express.Router();
 
-router.post('/addItem', addItemToCart);
 router.get('/:userId', cartItems);
+router.post('/addItem', addItemToCart);
 router.patch('/updateQuantity', updateQuantity);
 router.delete('/removeItem', removeItem);
 

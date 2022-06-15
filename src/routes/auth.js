@@ -1,17 +1,18 @@
 const express = require('express');
-
 const router = express.Router();
-
 const {
   registerUser,
   loginUser,
   getUsers,
   makeAdmin,
 } = require('../controllers/auth');
+const authenticateAdmin = require('../middlewares/admin');
+const authenticateUser = require('../middlewares/auth');
+const authenticateSuperAdmin = require('../middlewares/superAdmin');
 
-router.post('/register', registerUser);
+router.get('/', authenticateUser, authenticateAdmin, getUsers);
 router.post('/login', loginUser);
-router.get('/users', getUsers);
-router.patch('/makeAdmin', makeAdmin);
+router.post('/register', registerUser);
+router.patch('/makeAdmin', authenticateUser, authenticateSuperAdmin, makeAdmin);
 
 module.exports = router;

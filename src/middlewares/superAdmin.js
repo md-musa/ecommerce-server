@@ -1,5 +1,5 @@
-function authenticateAdmin(req, res, next) {
-  if (req.user.role === 'admin') {
+function authenticateSuperAdmin(req, res, next) {
+  if (req.user.role === 'superAdmin') {
     next();
   } else {
     res
@@ -8,4 +8,4 @@ function authenticateAdmin(req, res, next) {
   }
 }
 
-module.exports = authenticateAdmin;
+module.exports = authenticateSuperAdmin;
