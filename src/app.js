@@ -11,7 +11,7 @@ const compression = require('compression');
 const cors = require('cors');
 const fileUpload = require('express-fileupload');
 const helmet = require('helmet');
-const error = require('./middlewares/error');
+const errorHandler = require('./middlewares/errorHandler');
 
 const cart = require('./routes/cart');
 const auth = require('./routes/auth');
@@ -30,6 +30,10 @@ const authenticateUser = require('./middlewares/auth');
 //   );
 // }
 
+process.on('uncaughtException', function (exception) {
+  console.log('=====>', exception);
+});
+
 connectDB();
 
 app.use(cors());
@@ -38,16 +42,12 @@ app.use(compression());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(fileUpload());
-app.use((req, res, next) => {
-  console.log(req.headers);
-  next();
-});
 app.use('/api/wishLists', authenticateUser, wishList);
 app.use('/api/users', auth);
 app.use('/api/categories', category);
 app.use('/api/products', product);
 app.use('/api/carts', authenticateUser, cart);
 app.use('/api/orders', order);
-app.use(error);
+app.use(errorHandler);
 
 app.listen(port, () => console.log(`-> Server running at port ${port} ...`));

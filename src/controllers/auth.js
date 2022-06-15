@@ -1,5 +1,12 @@
 const bcrypt = require('bcrypt');
 const User = require('../models/auth');
+const {
+  GeneralError,
+  NotFound,
+  Unauthorized,
+  UnprocessableEntity,
+  Conflict,
+} = require('../utils/errors');
 const { validateUser, validateLoginUser } = require('../validations/auth');
 
 /**
@@ -9,15 +16,13 @@ const { validateUser, validateLoginUser } = require('../validations/auth');
  * @return     {Object} of user data
  */
 const registerUser = async (req, res) => {
-  const { error } = validateUser(req.body);
-  if (error) return res.status(400).send(error.details[0].message);
-
   const { name, email, password } = req.body;
-  console.log(req.body);
+
+  const { error } = validateUser(req.body);
+  if (error) throw new UnprocessableEntity(error.details[0].message);
 
   const isUserExist = await User.findOne({ email });
-  if (isUserExist)
-    return res.status(409).send({ message: 'User already registered' });
+  if (isUserExist) throw new Conflict('User already exist');
 
   const salt = await bcrypt.genSalt(10);
   const user = new User({
@@ -44,14 +49,14 @@ const registerUser = async (req, res) => {
 const loginUser = async (req, res) => {
   console.log(req.body);
   const { error } = validateLoginUser(req.body);
-  if (error) return res.status(400).send(error.details[0].message);
+  if (error) throw new UnprocessableEntity(error.details[0].message);
 
   const { email, password } = req.body;
   const user = await User.findOne({ email });
-  if (!user) return res.status(401).send('Invalid email or password');
+  if (!user) throw new NotFound('Invalid email');
 
   const isValidPassword = await bcrypt.compare(password, user.password);
-  if (!isValidPassword) return res.status(400).send('Invalid password');
+  if (!isValidPassword) throw new Unauthorized('Invalid password');
 
   return res.status(200).json({
     _id: user._id,
@@ -80,12 +85,10 @@ const getUsers = async (req, res) => {
  * @return     {Object}
  */
 const makeAdmin = async (req, res) => {
-  const { userId } = req.body;
-
-  const user = await User.findById(userId);
+  const user = await User.findById(req.user._id);
   user.role = 'admin';
   await user.save();
-  return res.send({
+  return res.json({
     message: 'User made admin successfully',
     user,
   });

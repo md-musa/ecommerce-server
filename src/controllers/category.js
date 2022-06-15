@@ -21,7 +21,7 @@ const addCategory = async (req, res) => {
     const parentCategory = await Category.findById(parentId);
     parentCategory.subCategories.push(category);
     parentCategory.save();
-    res.status(200).send(parentCategory);
+    res.send(parentCategory);
   } else {
     const newCategory = await category.save();
     res.send(newCategory);

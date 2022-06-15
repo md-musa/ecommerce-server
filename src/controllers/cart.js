@@ -39,7 +39,7 @@ const addItemToCart = async (req, res) => {
  * @returns     {Object} cart
  */
 const cartItems = async (req, res) => {
-  const cart = await Cart.findOne({ user: req.params.userId });
+  const cart = await Cart.findOne({ user: req.user._id });
   if (!cart) return res.send({ message: 'Cart is empty' });
   return res.send(cart.items);
 };
@@ -51,9 +51,9 @@ const cartItems = async (req, res) => {
  * @return      {Object} cart
  */
 const updateQuantity = async (req, res) => {
-  const { user, product, type } = req.body;
+  const { product, type } = req.body;
 
-  const cart = await Cart.findOne({ user });
+  const cart = await Cart.findOne({ user: req.user._id });
   const [item] = cart.items.filter(item => item.product == product);
 
   if (type === 'increment') item.quantity++;

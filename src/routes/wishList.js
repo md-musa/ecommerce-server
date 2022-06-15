@@ -6,7 +6,7 @@ const {
   addWishListProduct,
 } = require('../controllers/wishList');
 
-router.get('/:id', getWishListProducts);
-router.post('/:id', addWishListProduct);
+router.get('/', getWishListProducts);
+router.post('/', addWishListProduct);
 
 module.exports = router;

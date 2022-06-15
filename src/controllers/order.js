@@ -7,10 +7,10 @@ const Order = require('../models/order');
  * @return     {Object}
  */
 const addOrder = async (req, res) => {
-  const { userId, address, total, items } = req.body;
+  const { address, total, items } = req.body;
 
   const order = new Order({
-    userId,
+    userId: req.user._id,
     address,
     total,
     items,
@@ -32,7 +32,7 @@ const addOrder = async (req, res) => {
 const orders = async (req, res) => {
   const orders = await Order.find();
 
-  return res.status(200).json({
+  return res.json({
     orders,
   });
 };
@@ -63,7 +63,7 @@ const updateStatus = async (req, res) => {
   order.status = status;
   await order.save();
 
-  return res.status(200).json({
+  return res.json({
     message: 'Order status updated successfully',
     order,
   });
@@ -76,8 +76,9 @@ const updateStatus = async (req, res) => {
  * @return     {Array} products
  */
 const orderedProducts = async (req, res) => {
-  const { userId } = req.params;
-  const order = await Order.find({ userId }).populate('items.productId');
+  const order = await Order.find({ userId: req.user._id }).populate(
+    'items.productId'
+  );
   return res.send(order);
 };
 /**

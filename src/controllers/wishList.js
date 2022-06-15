@@ -1,16 +1,18 @@
 const WishList = require('../models/wishList');
+import { NotFound } from '../utils/errors';
 
 const getWishListProducts = async (req, res) => {
-  console.log(req.params);
-  const products = await WishList.findOne({ user: req.params.id }).populate(
+  const products = await WishList.findOne({ user: req.user._id }).populate(
     'products'
   );
   res.send(products);
 };
 
 const addWishListProduct = async (req, res) => {
-  const { productId, user } = req.body;
-  const wishList = await WishList.findOne({ user });
+  const { productId } = req.body;
+  const wishList = await WishList.findOne({ user: req.user._id });
+
+  if (!wishList) throw new NotFound('WishList not found');
 
   if (wishList) {
     wishList.products.push(productId);
