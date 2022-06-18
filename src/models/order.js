@@ -1,10 +1,11 @@
 const mongoose = require('mongoose');
 
 const orderSchema = new mongoose.Schema({
-  userId: {
+  user: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
     required: true,
+    unique: true,
   },
   date: {
     type: Date,
@@ -23,13 +24,15 @@ const orderSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  items: [
+  products: [
     {
-      productId: {
+      product: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Product',
         required: true,
+        unique: true,
       },
+      price: { type: Number, required: true },
       quantity: { type: Number, required: true },
     },
   ],

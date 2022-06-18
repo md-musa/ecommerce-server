@@ -71,13 +71,13 @@ const updateStatus = async (req, res) => {
 
 /**
  * @description Update order status
- * @route       GET /api/orders/:userId
+ * @route       GET /api/orders/
  * @access      Private
  * @return     {Array} products
  */
-const orderedProducts = async (req, res) => {
-  const order = await Order.find({ userId: req.user._id }).populate(
-    'items.productId'
+const myOrders = async (req, res) => {
+  const order = await Order.find({ user: req.user._id }).populate(
+    'products.product'
   );
   return res.send(order);
 };
@@ -108,5 +108,5 @@ module.exports = {
   totalSalesAndOrders,
   orders,
   updateStatus,
-  orderedProducts,
+  myOrders,
 };

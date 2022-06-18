@@ -3,9 +3,9 @@ const slugify = require('slugify');
 
 /**
  * @description Create new category
- * @route       POST /api/categories/addCategory
+ * @route       POST /api/categories/
  * @access      Admin
- * @return      {Object} category
+ * @return      {Object} of category
  */
 const addCategory = async (req, res) => {
   const { name, parentId, image } = req.body;
@@ -21,18 +21,18 @@ const addCategory = async (req, res) => {
     const parentCategory = await Category.findById(parentId);
     parentCategory.subCategories.push(category);
     parentCategory.save();
-    res.send(parentCategory);
+    res.status(201).send(parentCategory);
   } else {
     const newCategory = await category.save();
-    res.send(newCategory);
+    res.status(201).send(newCategory);
   }
 };
 
 /**
  * @description Get categories
- * @route       GET /api/categories/categories
+ * @route       GET /api/categories
  * @access      Public
- * @return      {Object} categories
+ * @return      {Object} of categories
  */
 const getCategories = async (req, res) => {
   const { id } = req.body;

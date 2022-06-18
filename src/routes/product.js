@@ -13,7 +13,7 @@ const authenticateAdmin = require('../middlewares/admin');
 const authenticateUser = require('../middlewares/auth');
 
 router.get('/', products);
-router.get('/search', searchProduct);
+router.get('/search/:term', searchProduct);
 router.post('/', authenticateUser, authenticateAdmin, addProduct);
 router.get('/:id', getProduct);
 router.get('/categories/:category', getProductByCategory);

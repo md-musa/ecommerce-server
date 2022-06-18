@@ -1,7 +1,6 @@
 const bcrypt = require('bcrypt');
 const User = require('../models/auth');
 const {
-  GeneralError,
   NotFound,
   Unauthorized,
   UnprocessableEntity,
@@ -11,7 +10,7 @@ const { validateUser, validateLoginUser } = require('../validations/auth');
 
 /**
  * @description Sign up a new user
- * @route       POST /api/users/registerUser
+ * @route       POST /api/users/register
  * @access      Public
  * @return     {Object} of user data
  */
@@ -21,8 +20,8 @@ const registerUser = async (req, res) => {
   const { error } = validateUser(req.body);
   if (error) throw new UnprocessableEntity(error.details[0].message);
 
-  const isUserExist = await User.findOne({ email });
-  if (isUserExist) throw new Conflict('User already exist');
+  const userExist = await User.findOne({ email });
+  if (userExist) throw new Conflict('User already exist');
 
   const salt = await bcrypt.genSalt(10);
   const user = new User({
@@ -42,12 +41,11 @@ const registerUser = async (req, res) => {
 
 /**
  * @description Log in a user
- * @route       POST /api/users/loginUser
+ * @route       POST /api/users/login
  * @access      Public
- * @return     {Object}
+ * @return     {Object} of user data
  */
 const loginUser = async (req, res) => {
-  console.log(req.body);
   const { error } = validateLoginUser(req.body);
   if (error) throw new UnprocessableEntity(error.details[0].message);
 
@@ -55,8 +53,8 @@ const loginUser = async (req, res) => {
   const user = await User.findOne({ email });
   if (!user) throw new NotFound('Invalid email');
 
-  const isValidPassword = await bcrypt.compare(password, user.password);
-  if (!isValidPassword) throw new Unauthorized('Invalid password');
+  const validPassword = await bcrypt.compare(password, user.password);
+  if (!validPassword) throw new Unauthorized('Invalid password');
 
   return res.status(200).json({
     _id: user._id,
@@ -70,7 +68,7 @@ const loginUser = async (req, res) => {
 /**
  * @description Get all users
  * @route       GET /api/users/
- * @access      Private
+ * @access      Admin
  * @return     {Array} users
  */
 const getUsers = async (req, res) => {
@@ -79,9 +77,9 @@ const getUsers = async (req, res) => {
 };
 
 /**
- * @description Make user admin
+ * @description Make admin
  * @route       POST /api/users/makeAdmin
- * @access      Private, Admin
+ * @access      Super Admin
  * @return     {Object}
  */
 const makeAdmin = async (req, res) => {

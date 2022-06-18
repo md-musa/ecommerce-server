@@ -7,5 +7,4 @@ const authenticateAdmin = require('../middlewares/admin');
 router.get('/', getCategories);
 router.post('/', authenticateUser, authenticateAdmin, addCategory);
 
-// router.route( ).get(getCategories).post(addCategory);
 module.exports = router;

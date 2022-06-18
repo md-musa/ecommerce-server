@@ -4,7 +4,7 @@ const {
   totalSalesAndOrders,
   orders,
   updateStatus,
-  orderedProducts,
+  myOrders,
   lastWeekSales,
 } = require('../controllers/order');
 const authenticateAdmin = require('../middlewares/admin');
@@ -20,7 +20,7 @@ router.get(
 );
 router.get('/', authenticateUser, orders);
 router.post('/', authenticateUser, addOrder);
-router.get('/:userId', authenticateUser, orderedProducts);
+router.get('/myOrders', authenticateUser, myOrders);
 router.get(
   '/lastWeekSales',
   authenticateUser,

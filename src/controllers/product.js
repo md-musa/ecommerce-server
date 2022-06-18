@@ -87,7 +87,7 @@ const addManyProduct = async (req, res) => {
 const getProductByCategory = async (req, res) => {
   const { category } = req.params;
   const { sort, min, max, rating } = req.query;
-  console.log(req.query);
+  // console.log(req.query);
 
   let products = await Product.find({ category });
 
@@ -114,14 +114,15 @@ const getProductByCategory = async (req, res) => {
 
 /**
  * @description Get all products
- * @route       GET /api/products/
+ * @route       GET /api/products
  * @access      Public
- * @return     {Array} Products
+ * @return     {Array} of Products
  */
 const products = async (req, res) => {
   const products = await Product.find();
-  res.send({ products });
+  res.send(products);
 };
+
 /**
  * @description Get single product
  * @route       GET /api/products/:id
@@ -145,13 +146,13 @@ const getBestSellingProducts = async (req, res) => {
 };
 
 /**
- * @description Get products by searching
+ * @description Get product by searching
  * @route       GET /api/products/search
  * @access      Public
- * @return     {Array} Products
+ * @return     {Array} of Products
  */
 const searchProduct = async (req, res) => {
-  const term = req.query.term;
+  const term = req.params.term;
   const items = await Product.find({
     title: { $regex: term, $options: 'i' },
   });
