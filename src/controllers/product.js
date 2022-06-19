@@ -142,6 +142,7 @@ const getProduct = async (req, res) => {
  */
 const getBestSellingProducts = async (req, res) => {
   const items = await Product.find().sort({ sold: -1 }).limit(5);
+  console.log(items);
   res.send(items);
 };
 

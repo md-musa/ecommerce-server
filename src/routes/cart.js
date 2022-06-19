@@ -5,11 +5,12 @@ const {
   cartItems,
 } = require('../controllers/cart');
 const express = require('express');
+const authenticateUser = require('../middlewares/auth');
 const router = express.Router();
 
-router.get('/:userId', cartItems);
-router.post('/addItem', addItemToCart);
-router.patch('/updateQuantity', updateQuantity);
-router.delete('/removeItem', removeItem);
+router.get('/', authenticateUser, cartItems);
+router.post('/', authenticateUser, addItemToCart);
+router.patch('/updateQuantity', authenticateUser, updateQuantity);
+router.delete('/', authenticateUser, removeItem);
 
 module.exports = router;

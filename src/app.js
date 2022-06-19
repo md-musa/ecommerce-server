@@ -46,7 +46,7 @@ app.use('/api/users', auth);
 app.use('/api/wishLists', wishList);
 app.use('/api/categories', category);
 app.use('/api/products', product);
-app.use('/api/carts', authenticateUser, cart);
+app.use('/api/carts', cart);
 app.use('/api/orders', order);
 app.use(errorHandler);
 

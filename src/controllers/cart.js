@@ -7,25 +7,26 @@ const Cart = require('../models/cart');
  * @return      {Object} cart
  */
 const addItemToCart = async (req, res) => {
-  const { user, item } = req.body;
+  console.log(req.body);
+  const { product, quantity } = req.body;
 
-  const cart = await Cart.findOne({ user });
+  const cart = await Cart.findOne({ user: req.user._id });
 
   if (cart) {
-    const itemExist = cart.items.filter(
-      cartItem => cartItem.product == item.product
-    );
-    if (itemExist.length)
-      return res.send({ message: 'Item already in the cart' });
-
-    cart.items.push(item);
+    // const itemExist = cart.products.filter(
+    //   product => product.product._id == product
+    // );
+    // if (itemExist.length)
+    //   return res.send({ message: 'Item already in the cart' });
+    console.log(cart.products);
+    cart.products.push({ product: product, quantity: quantity ? quantity : 1 });
     const result = await cart.save();
     return res.send(result);
   }
 
   const newItem = new Cart({
-    user,
-    items: item,
+    user: req.user._id,
+    products: [{ product, quantity }],
   });
 
   const result = await newItem.save();
@@ -39,9 +40,12 @@ const addItemToCart = async (req, res) => {
  * @returns     {Object} cart
  */
 const cartItems = async (req, res) => {
-  const cart = await Cart.findOne({ user: req.user._id });
-  if (!cart) return res.send({ message: 'Cart is empty' });
-  return res.send(cart.items);
+  const cart = await Cart.findOne({ user: req.user._id }).populate(
+    'products.product'
+  );
+  if (cart) cart.populate('products.product');
+  if (!cart) return res.send([]);
+  return res.send(cart.products);
 };
 
 /**
@@ -51,15 +55,16 @@ const cartItems = async (req, res) => {
  * @return      {Object} cart
  */
 const updateQuantity = async (req, res) => {
-  const { product, type } = req.body;
+  const { id, operation } = req.query;
 
   const cart = await Cart.findOne({ user: req.user._id });
-  const [item] = cart.items.filter(item => item.product == product);
 
-  if (type === 'increment') item.quantity++;
-  else if (type === 'decrement' && item.quantity > 1) {
-    item.quantity--;
-  }
+  cart.products.forEach(item => {
+    if (item._id == id) {
+      if (operation === 'INCREMENT') item.quantity++;
+      else if (operation === 'DECREMENT' && item.quantity > 1) item.quantity--;
+    }
+  });
 
   const result = await cart.save();
   return res.send(result);
@@ -72,14 +77,17 @@ const updateQuantity = async (req, res) => {
  * @return      {Object} cart
  */
 const removeItem = async (req, res) => {
-  //take user id using auth middleware
-  const { user, product } = req.body;
+  console.log('-------------------');
+  const { id } = req.query;
+  console.log('CART ID---> ', id);
 
-  const cart = await Cart.findOne({ user });
-  if (cart.items.length === 0) return res.send({ message: 'cart is empty' });
+  const cart = await Cart.findOne({ user: req.user._id });
+  // console.log('cart=>', cart);
+  if (cart.products.length === 0) return res.send([]);
 
-  const items = cart.items.filter(item => item.product !== product);
-  cart.items = items;
+  const items = cart.products.filter(item => item._id != id);
+  // console.log(items);
+  cart.products = items;
 
   const result = await cart.save();
   return res.send(result);
