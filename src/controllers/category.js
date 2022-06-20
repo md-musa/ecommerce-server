@@ -35,7 +35,7 @@ const addCategory = async (req, res) => {
  * @return      {Object} of categories
  */
 const getCategories = async (req, res) => {
-  const { id } = req.body;
+  const id = req.query.id;
 
   if (id) {
     const categories = await Category.findById(id);

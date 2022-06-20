@@ -1,4 +1,39 @@
 const Cart = require('../models/cart');
+const { BadRequest, NotFound } = require('../utils/errors');
+const TAX = 0.05;
+const DELIVERY_CHARGE = 10;
+const APPLICABLE_DELIVERY_CHARGE = 100;
+
+const cartCalculate = (products, discountPercentage = 1) => {
+  const subTotal =
+    products.reduce(
+      (accumulator, currentItem) =>
+        accumulator + currentItem.price * currentItem.quantity,
+      0
+    ) || 0;
+
+  console.log('SUB', subTotal);
+
+  // const discount = (subTotalPrice * discountPercentage) / 100;
+  // const remainingSubtotal = subTotalPrice - discount;
+
+  if (subTotal <= APPLICABLE_DELIVERY_CHARGE && subTotal > 0) {
+    return {
+      subTotal: subTotal,
+      deliveryCharge: DELIVERY_CHARGE,
+      tax: subTotal * TAX,
+      total: subTotal + TAX + DELIVERY_CHARGE,
+    };
+  } else {
+    const tax = subTotal * TAX;
+    return {
+      subTotal: subTotal,
+      deliveryCharge: 0,
+      tax,
+      total: subTotal + tax,
+    };
+  }
+};
 
 /**
  * @description Add item to cart
@@ -8,26 +43,45 @@ const Cart = require('../models/cart');
  */
 const addItemToCart = async (req, res) => {
   console.log(req.body);
-  const { product, quantity } = req.body;
+  const { productId, price, quantity = 1 } = req.body;
 
   const cart = await Cart.findOne({ user: req.user._id });
 
   if (cart) {
-    // const itemExist = cart.products.filter(
-    //   product => product.product._id == product
-    // );
-    // if (itemExist.length)
-    //   return res.send({ message: 'Item already in the cart' });
-    console.log(cart.products);
-    cart.products.push({ product: product, quantity: quantity ? quantity : 1 });
+    const isItemAlreadyExist = cart.products.find(
+      product => product._id == productId
+    );
+    if (isItemAlreadyExist) throw new BadRequest('Item already exist in cart');
+
+    cart.products.push({
+      product: productId,
+      price,
+      quantity: quantity ? quantity : 1,
+    });
+
+    const { subTotal, deliveryCharge, tax, total } = cartCalculate(
+      cart.products
+    );
+    cart.subTotal = subTotal;
+    cart.deliveryCharge = deliveryCharge;
+    cart.tax = tax;
+    cart.total = total;
+
     const result = await cart.save();
+
     return res.send(result);
   }
 
   const newItem = new Cart({
     user: req.user._id,
-    products: [{ product, quantity }],
+    products: [{ product: productId, price, quantity }],
   });
+
+  newItem.subTotal = price * quantity;
+  newItem.deliveryCharge =
+    price * quantity < APPLICABLE_DELIVERY_CHARGE ? DELIVERY_CHARGE : 0;
+  newItem.tax = price * quantity * TAX;
+  newItem.total = newItem.subTotal + newItem.deliveryCharge + newItem.tax;
 
   const result = await newItem.save();
   return res.send(result);
@@ -40,12 +94,13 @@ const addItemToCart = async (req, res) => {
  * @returns     {Object} cart
  */
 const cartItems = async (req, res) => {
-  const cart = await Cart.findOne({ user: req.user._id }).populate(
+  let cart = await Cart.findOne({ user: req.user._id }).populate(
     'products.product'
   );
-  if (cart) cart.populate('products.product');
-  if (!cart) return res.send([]);
-  return res.send(cart.products);
+
+  if (!cart) throw new NotFound('Cart not found');
+
+  return res.send(cart);
 };
 
 /**
@@ -66,6 +121,13 @@ const updateQuantity = async (req, res) => {
     }
   });
 
+  const { subTotal, deliveryCharge, tax, total } = cartCalculate(cart.products);
+
+  cart.subTotal = subTotal;
+  cart.deliveryCharge = deliveryCharge;
+  cart.tax = tax;
+  cart.total = total;
+
   const result = await cart.save();
   return res.send(result);
 };
@@ -77,17 +139,20 @@ const updateQuantity = async (req, res) => {
  * @return      {Object} cart
  */
 const removeItem = async (req, res) => {
-  console.log('-------------------');
   const { id } = req.query;
-  console.log('CART ID---> ', id);
 
   const cart = await Cart.findOne({ user: req.user._id });
-  // console.log('cart=>', cart);
-  if (cart.products.length === 0) return res.send([]);
+  if (!cart) throw new NotFound('Cart not found');
 
   const items = cart.products.filter(item => item._id != id);
-  // console.log(items);
   cart.products = items;
+
+  const { subTotal, deliveryCharge, tax, total } = cartCalculate(cart.products);
+
+  cart.subTotal = subTotal;
+  cart.deliveryCharge = deliveryCharge;
+  cart.tax = tax;
+  cart.total = total;
 
   const result = await cart.save();
   return res.send(result);

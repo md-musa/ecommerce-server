@@ -15,7 +15,7 @@ const authenticateUser = require('../middlewares/auth');
 router.get('/', products);
 router.get('/search/:term', searchProduct);
 router.get('/bestSellingProducts', getBestSellingProducts);
-router.post('/', authenticateUser, authenticateAdmin, addProduct);
+router.post('/', addProduct);
 router.get('/:id', getProduct);
 router.get('/categories/:category', getProductByCategory);
 router.post('/addMany', authenticateUser, authenticateAdmin, addManyProduct);
