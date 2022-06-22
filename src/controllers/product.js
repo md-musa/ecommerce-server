@@ -9,16 +9,12 @@ const Categories = require('../models/category');
  * @returns     {Object} product
  */
 const addProduct = async (req, res) => {
-  const {
-    title,
-    price,
-    description,
-    stock,
-    brand,
-    image,
-    category,
-    createdBy,
-  } = req.body;
+  // console.log(images);
+  // console.log(req.body);
+
+  const images = req.body.images;
+
+  const { title, price, description, stock, brand, category } = req.body;
 
   const product = {
     title,
@@ -27,12 +23,12 @@ const addProduct = async (req, res) => {
     description,
     stock,
     brand,
-    category,
-    createdBy,
+    category: slugify(category).toLowerCase(),
+    createdBy: req.user._id,
+    images,
   };
 
   const newProduct = new Product(product);
-  newProduct.images.push(req.body.image);
 
   const result = await newProduct.save();
   return res.status(201).send(result);
@@ -42,7 +38,7 @@ const addProduct = async (req, res) => {
  * @route       POST /api/products/addMany
  * @access      Admin
  * @returns     {Object} products
- */
+ */ // Under development
 const addManyProduct = async (req, res) => {
   req.body.products.forEach(async product => {
     const {

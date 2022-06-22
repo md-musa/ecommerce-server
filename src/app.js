@@ -41,7 +41,7 @@ app.use(helmet());
 app.use(compression());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(fileUpload());
+app.use(fileUpload({ useTempFiles: true }));
 app.use('/api/users', auth);
 app.use('/api/wishLists', wishList);
 app.use('/api/categories', category);
