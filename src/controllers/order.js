@@ -1,26 +1,49 @@
+const Cart = require('../models/cart');
 const Order = require('../models/order');
+const mongoose = require('mongoose');
 
 /**
  * @description Add new order
- * @route       POST /api/orders/
+ * @route       POST /api/payment/webhook
  * @access      Private
  * @return     {Object}
  */
-const addOrder = async (req, res) => {
-  const { address, total, items } = req.body;
+const placeOrder = async data => {
+  const {
+    address,
+    paymentId,
+    userEmail,
+    shippingAddress,
+    phone,
+    email,
+    cartId,
+    paymentStatus,
+  } = data;
+
+  const cart = await Cart.find(mongoose.Types.ObjectId(cartId));
+  if (!cart) {
+    console.log('❌', cart);
+    return;
+  }
+  const products = cart.products;
 
   const order = new Order({
-    userId: req.user._id,
+    userEmail,
+    paymentId,
+    paymentStatus,
     address,
-    total,
-    items,
+    shippingAddress,
+    phone,
+    email,
+    products,
   });
   await order.save();
 
-  return res.status(201).json({
-    message: 'Order added successfully',
-    order,
-  });
+  if (paymentStatus === 'paid') {
+    const deleteCart = await Cart.findByIdAndDelete(cartId);
+  }
+
+  return;
 };
 
 /**
@@ -46,7 +69,7 @@ const orders = async (req, res) => {
 const totalSalesAndOrders = async (req, res) => {
   const orders = await Order.find();
   const totalSales = orders.reduce((acc, order) => acc + order.total, 0);
-  return res.send({ totalSales: totalSales, totalOrders: orders.length });
+  return res.send({ totalSales, totalOrders: orders.length });
 };
 
 /**
@@ -104,7 +127,7 @@ const lastWeekSales = async (req, res) => {
 
 module.exports = {
   lastWeekSales,
-  addOrder,
+  placeOrder,
   totalSalesAndOrders,
   orders,
   updateStatus,

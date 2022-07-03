@@ -1,6 +1,7 @@
 const slugify = require('slugify');
 const Product = require('../models/product');
 const Categories = require('../models/category');
+const { NotFound } = require('../utils/errors');
 
 /**
  * @description Add new product
@@ -12,7 +13,7 @@ const addProduct = async (req, res) => {
   // console.log(images);
   // console.log(req.body);
 
-  const images = req.body.images;
+  const { images } = req.body;
 
   const { title, price, description, stock, brand, category } = req.body;
 
@@ -138,7 +139,7 @@ const getProduct = async (req, res) => {
  */
 const getBestSellingProducts = async (req, res) => {
   const items = await Product.find().sort({ sold: -1 }).limit(5);
-  console.log(items);
+  // console.log(items);
   res.send(items);
 };
 
@@ -149,14 +150,44 @@ const getBestSellingProducts = async (req, res) => {
  * @return     {Array} of Products
  */
 const searchProduct = async (req, res) => {
-  const term = req.params.term;
+  const { term } = req.params;
   const items = await Product.find({
     title: { $regex: term, $options: 'i' },
   });
   res.send(items);
 };
 
+/**
+ * @description Get product by searching
+ * @route       GET /api/products/search
+ * @access      Public
+ * @return     {Array} of Products
+ */
+const addReview = async (req, res) => {
+  const userId = req.user._id;
+  const { rating, comment } = req.body;
+  const { productId } = req.params;
+
+  const item = await Product.findById(productId);
+  if (!item) throw new NotFound('Not found');
+
+  item.reviews.push({
+    user: userId,
+    rating,
+    comment,
+  });
+
+  // setting the average rating for fast query
+  const total = item.reviews.reduce((acc, curr) => acc + curr.rating, 0);
+  item.rating = (total / item.reviews.length).toFixed(2);
+
+  await item.save();
+
+  res.send(item);
+};
+
 module.exports = {
+  addReview,
   getBestSellingProducts,
   addProduct,
   getProductByCategory,

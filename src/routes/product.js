@@ -1,4 +1,5 @@
 const express = require('express');
+
 const router = express.Router();
 const {
   addProduct,
@@ -7,6 +8,7 @@ const {
   getBestSellingProducts,
   addManyProduct,
   getProduct,
+  addReview,
   searchProduct,
 } = require('../controllers/product');
 const authenticateAdmin = require('../middlewares/admin');
@@ -21,5 +23,6 @@ router.get('/:id', getProduct);
 router.get('/categories/:category', getProductByCategory);
 router.post('/addMany', authenticateUser, authenticateAdmin, addManyProduct);
 router.get('/productByCategory/:name', getProductByCategory);
+router.post('/review/:productId', authenticateUser, addReview);
 
 module.exports = router;

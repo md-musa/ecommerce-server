@@ -15,10 +15,7 @@ const productSchema = mongoose.Schema(
       type: Number,
       required: true,
     },
-    description: {
-      type: String,
-      required: true,
-    },
+
     sold: {
       type: Number,
       default: 0,
@@ -42,14 +39,40 @@ const productSchema = mongoose.Schema(
       required: true,
     },
     rating: { type: Number, default: 0 },
+
+    highlights: [
+      {
+        service: {
+          type: String,
+        },
+        description: {
+          type: String,
+        },
+      },
+    ],
+    description: {
+      type: String,
+      required: true,
+    },
+    specifications: [
+      {
+        service: { type: String },
+        description: { type: String },
+      },
+    ],
     reviews: [
       {
         user: {
           type: mongoose.Schema.Types.ObjectId,
           ref: 'User',
+          required: true,
         },
-        comment: { type: String },
-        rating: { type: Number },
+        comment: { type: String, required: true },
+        rating: { type: Number, required: true },
+        date: {
+          type: Date,
+          default: Date.now,
+        },
       },
     ],
     createdBy: {

@@ -1,4 +1,6 @@
 const express = require('express');
+const Stripe = require('stripe');
+
 const {
   addOrder,
   totalSalesAndOrders,
@@ -6,6 +8,7 @@ const {
   updateStatus,
   myOrders,
   lastWeekSales,
+  handlePayment,
 } = require('../controllers/order');
 const authenticateAdmin = require('../middlewares/admin');
 const authenticateUser = require('../middlewares/auth');
@@ -19,7 +22,6 @@ router.get(
   totalSalesAndOrders
 );
 router.get('/', authenticateUser, orders);
-router.post('/', authenticateUser, addOrder);
 router.get('/myOrders', authenticateUser, myOrders);
 router.get(
   '/lastWeekSales',
@@ -33,9 +35,5 @@ router.patch(
   authenticateAdmin,
   updateStatus
 );
-
-// router.get('/:id', getOrderById);
-// router.delete('/cancelOrder/:id', cancelOrder);
-// router.route('/:id').get(getOrderById).patch(updateOrderStatus)
 
 module.exports = router;

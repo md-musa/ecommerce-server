@@ -31,6 +31,13 @@
 -> auto correction 
 -> Use tree data structure for category
 -> Use Quick sort for sorting
--> 
+-> send related product except current one
 
 
+
+
+
+Payment complete
+1. pass cart id to webhook
+2. if payment is complete then remove the cart from Cart list. If not than save a copy of the cart and make the payment status as incomplete
+3. 

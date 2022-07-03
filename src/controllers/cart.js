@@ -1,6 +1,6 @@
 const Cart = require('../models/cart');
 const { BadRequest, NotFound } = require('../utils/errors');
-const TAX = 0.05;
+const TAX = 0;
 const DELIVERY_CHARGE = 10;
 const APPLICABLE_DELIVERY_CHARGE = 100;
 
@@ -12,7 +12,7 @@ const cartCalculate = (products, discountPercentage = 1) => {
       0
     ) || 0;
 
-  console.log('SUB', subTotal);
+  // console.log('SUB', subTotal);
 
   // const discount = (subTotalPrice * discountPercentage) / 100;
   // const remainingSubtotal = subTotalPrice - discount;
@@ -42,7 +42,7 @@ const cartCalculate = (products, discountPercentage = 1) => {
  * @return      {Object} cart
  */
 const addItemToCart = async (req, res) => {
-  console.log(req.body);
+  // console.log(req.body);
   const { productId, price, quantity = 1 } = req.body;
 
   const cart = await Cart.findOne({ user: req.user._id });
@@ -51,7 +51,8 @@ const addItemToCart = async (req, res) => {
     const isItemAlreadyExist = cart.products.find(
       product => product._id == productId
     );
-    if (isItemAlreadyExist) throw new BadRequest('Item already exist in cart');
+    if (isItemAlreadyExist)
+      throw new BadRequest('Item already exist in the cart');
 
     cart.products.push({
       product: productId,

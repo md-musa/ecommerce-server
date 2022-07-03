@@ -6,8 +6,8 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-const uploadImageToCloudinary = async file => {
-  return new Promise(resolve => {
+const uploadImageToCloudinary = async file =>
+  new Promise(resolve => {
     cloudinary.uploader.upload(file, (err, res) => {
       if (err) return res.status(500).send('upload image error');
       resolve({
@@ -15,12 +15,11 @@ const uploadImageToCloudinary = async file => {
       });
     });
   });
-};
 
 const uploadImages = async (req, res, next) => {
-  const data = req.files.images.map(async file => {
-    return await uploadImageToCloudinary(file.tempFilePath);
-  });
+  const data = req.files.images.map(
+    async file => await uploadImageToCloudinary(file.tempFilePath)
+  );
 
   Promise.all(data).then(result => {
     const urls = result.map(item => item.res);

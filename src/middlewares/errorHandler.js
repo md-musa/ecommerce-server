@@ -5,8 +5,8 @@ const environment = process.env.NODE_ENV === 'production';
 function errorHandler(error, req, res, next) {
   // logger.error(error.stack)
 
-  console.log('MESSAGE =============> ', error.message);
-  console.log('STACK ===============> ', error.stack);
+  console.log('❌MESSAGE ==> ', error.message);
+  console.log('STACK  =====> ', error.stack);
 
   if (typeof error.getStatusCode === 'function') {
     res.status(error.getStatusCode()).json({
