@@ -19,28 +19,32 @@ const placeOrder = async data => {
     cartId,
     paymentStatus,
   } = data;
+  try {
+    const cart = await Cart.find(mongoose.Types.ObjectId(cartId));
+    if (!cart) {
+      console.log('❌', cart);
+      return;
+    }
+    const products = cart.products;
 
-  const cart = await Cart.find(mongoose.Types.ObjectId(cartId));
-  if (!cart) {
-    console.log('❌', cart);
-    return;
-  }
-  const products = cart.products;
+    const order = new Order({
+      userEmail,
+      paymentId,
+      paymentStatus,
+      address,
+      shippingAddress,
+      phone,
+      email,
+      products,
+    });
+    await order.save();
 
-  const order = new Order({
-    userEmail,
-    paymentId,
-    paymentStatus,
-    address,
-    shippingAddress,
-    phone,
-    email,
-    products,
-  });
-  await order.save();
-
-  if (paymentStatus === 'paid') {
-    const deleteCart = await Cart.findByIdAndDelete(cartId);
+    if (paymentStatus === 'paid') {
+      const up = await Cart.findByIdAndUpdate(cartId, { products: [] });
+      await up.save();
+    }
+  } catch (err) {
+    console.log('ERRR', err);
   }
 
   return;

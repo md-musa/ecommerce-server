@@ -97,8 +97,8 @@ const completeOrder = async (req, res) => {
   const event = stripe.webhooks.constructEvent(req.body, sig, endpointSecret);
 
   if (event.type === 'checkout.session.completed') {
-    console.log('✅ Success-->', data);
     const data = event.data.object;
+    console.log('✅ Success-->', data);
 
     const orderData = {
       paymentId: data.id,
@@ -110,7 +110,7 @@ const completeOrder = async (req, res) => {
       email: data.customer_details.email,
       paymentStatus: data.payment_status,
     };
-
+    //  Place a new order and remove cart item if payment status successful
     placeOrder(orderData);
   }
   res.send();

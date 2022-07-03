@@ -1,5 +1,4 @@
 const express = require('express');
-const Stripe = require('stripe');
 
 const {
   addOrder,
@@ -15,25 +14,10 @@ const authenticateUser = require('../middlewares/auth');
 
 const router = express.Router();
 
-router.get(
-  '/totalSalesAndOrders',
-  authenticateUser,
-  authenticateAdmin,
-  totalSalesAndOrders
-);
 router.get('/', authenticateUser, orders);
+router.get('/totalSalesAndOrders', authenticateUser, authenticateAdmin, totalSalesAndOrders);
 router.get('/myOrders', authenticateUser, myOrders);
-router.get(
-  '/lastWeekSales',
-  authenticateUser,
-  authenticateAdmin,
-  lastWeekSales
-);
-router.patch(
-  '/updateStatus/:id',
-  authenticateUser,
-  authenticateAdmin,
-  updateStatus
-);
+router.get('/lastWeekSales', authenticateUser, authenticateAdmin, lastWeekSales);
+router.patch('/updateStatus/:id', authenticateUser, authenticateAdmin, updateStatus);
 
 module.exports = router;
