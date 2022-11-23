@@ -42,7 +42,7 @@ app.use(helmet());
 app.use(compression());
 // app.use(express.json());
 app.use((req, res, next) => {
-  if (req.originalUrl == '/api/payment/webhook') {
+  if (req.originalUrl === '/api/payment/webhook') {
     next();
   } else {
     express.json()(req, res, next);
